@@ -36,6 +36,6 @@ jobs:
           application_name: docker-node # Replace with your Beanstalk application name
           environment_name: Docker-node-env # Replace with your Beanstalk environment name
           version_label: ${{ github.sha }}
-          existing_bucket_name: ${{ BUCKET_NAME }} # Replace with your S3 bucket name
-          region: ${{ BUCKET_REGION }} # Replace with your AWS region
+          existing_bucket_name: ${{ secrets.BUCKET_NAME }} # Replace with your S3 bucket name
+          region: ${{ secrets.BUCKET_REGION }} # Replace with your AWS region
           deployment_package: deploy.zip
