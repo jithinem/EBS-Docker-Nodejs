@@ -1,0 +1,41 @@
+name: Deploy Node.js to AWS Beanstalk
+
+on:
+  push:
+    branches:
+      - "main" # Replace with your deployment branch name
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout source code
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Step 3: Build and package the application
+      - name: Build Docker image
+        run: |
+          docker build -t my-node-app:latest .
+
+      # Step 4: Generate deployment package
+      - name: Generate deployment package
+        run: zip -r deploy.zip . -x '*.git*'
+
+      # Step 5: Deploy to AWS Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: docker-node # Replace with your Beanstalk application name
+          environment_name: Docker-node-env # Replace with your Beanstalk environment name
+          version_label: ${{ github.sha }}
+          existing_bucket_name: ${{ BUCKET_NAME }} # Replace with your S3 bucket name
+          region: ${{ BUCKET_REGION }} # Replace with your AWS region
+          deployment_package: deploy.zip
